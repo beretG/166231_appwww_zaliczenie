@@ -1,0 +1,60 @@
+{% extends 'courses/base.html' %}
+
+{% block title %}Lista Studentów - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="mb-4">Lista Studentów</h1>
+            {% if user.is_staff %}
+            <a href="#" class="btn btn-primary mb-3">Dodaj Studenta</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Imię i Nazwisko</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Data urodzenia</th>
+                            <th>Liczba kursów</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.user.get_full_name }}</td>
+                            <td>{{ student.user.email }}</td>
+                            <td>{{ student.phone }}</td>
+                            <td>{{ student.date_of_birth|date:"d.m.Y" }}</td>
+                            <td>{{ student.courses.count }}</td>
+                            <td>
+                                <a href="{% url 'courses:student-detail' student.pk %}" class="btn btn-sm btn-info">
+                                    Szczegóły
+                                </a>
+                                {% if user.is_staff %}
+                                <a href="#" class="btn btn-sm btn-warning">
+                                    Edytuj
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">Brak studentów w bazie danych.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

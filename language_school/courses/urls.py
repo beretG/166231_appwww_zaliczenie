@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import RegisterView
 from . import views
 
 app_name = 'courses'
@@ -12,7 +13,7 @@ urlpatterns = [
     path('course/new/', views.CourseCreateView.as_view(), name='course-create'),
     path('course/<int:pk>/edit/', views.CourseUpdateView.as_view(), name='course-update'),
     path('course/<int:pk>/delete/', views.CourseDeleteView.as_view(), name='course-delete'),
-    
+
      # URLs dla nauczycieli
     path('teachers/', views.TeacherListView.as_view(), name='teacher-list'),
     path('teacher/<int:pk>/', views.TeacherDetailView.as_view(), name='teacher-detail'),
@@ -24,4 +25,11 @@ urlpatterns = [
     # URLs dla lekcji
     path('lessons/', views.lesson_list, name='lesson-list'),
     path('lesson/<int:pk>/', views.lesson_detail, name='lesson-detail'),
+
+    # Urls dla jezykow
+    path('languages/', views.LanguageListView.as_view(), name='language-list'),
+    path('language/<int:pk>/', views.LanguageDetailView.as_view(), name='language-detail'),
+
+    # URLs dla rejestracji
+    path('register/', RegisterView.as_view(), name='register'),
 ]

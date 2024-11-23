@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Teacher, Student, Lesson, Attendance
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
 
 # Widok strony głównej
 def home(request):
@@ -82,6 +83,22 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         context['enrollments'] = self.object.enrollment_set.all()
         return context
 
+# Widoki dla lekcji
+class LanguageListView(ListView):
+    model = Language
+    template_name = 'courses/language_list.html'
+    context_object_name = 'languages'
+
+class LanguageDetailView(DetailView):
+    model = Language
+    template_name = 'courses/language_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['courses'] = self.object.course_set.all()
+        context['teachers'] = self.object.teacher_set.all()
+        return context
+    
 # Widok dla lekcji
 @login_required
 def lesson_list(request):
@@ -122,3 +139,8 @@ def lesson_detail(request, pk):
         'lesson': lesson,
         'attendances': attendances
     })
+
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'courses/register.html'
