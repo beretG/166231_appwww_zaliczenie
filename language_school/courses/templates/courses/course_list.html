@@ -1,0 +1,39 @@
+{% extends 'courses/base.html' %}
+
+{% block title %}Lista Kursów - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h1>Lista Kursów</h1>
+        <a href="{% url 'courses:course-create' %}" class="btn btn-primary mb-3">Dodaj nowy kurs</a>
+    </div>
+</div>
+
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ course.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ course.language }} - {{ course.level }}</h6>
+                <p class="card-text">{{ course.description|truncatewords:30 }}</p>
+                <p class="card-text">
+                    <small class="text-muted">
+                        Od: {{ course.start_date }}<br>
+                        Do: {{ course.end_date }}
+                    </small>
+                </p>
+                <a href="{% url 'courses:course-detail' course.pk %}" class="btn btn-info">Szczegóły</a>
+                <a href="{% url 'courses:course-update' course.pk %}" class="btn btn-warning">Edytuj</a>
+                <a href="{% url 'courses:course-delete' course.pk %}" class="btn btn-danger">Usuń</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <p>Brak dostępnych kursów.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

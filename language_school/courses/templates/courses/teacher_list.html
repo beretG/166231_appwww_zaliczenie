@@ -1,0 +1,35 @@
+{% extends 'courses/base.html' %}
+
+{% block title %}Nauczyciele - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Nasi nauczyciele</h1>
+    <div class="row">
+        {% for teacher in teachers %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if teacher.photo %}
+                <img src="{{ teacher.photo.url }}" class="card-img-top" alt="{{ teacher.user.get_full_name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ teacher.user.get_full_name }}</h5>
+                    <p class="card-text">
+                        <strong>Języki:</strong>
+                        {% for language in teacher.languages.all %}
+                            {{ language.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="card-text">{{ teacher.bio|truncatewords:30 }}</p>
+                    <a href="{% url 'courses:teacher-detail' teacher.pk %}" class="btn btn-primary">Szczegóły</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p>Brak dostępnych nauczycieli.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

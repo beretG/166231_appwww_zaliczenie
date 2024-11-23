@@ -1,0 +1,41 @@
+{% extends 'courses/base.html' %}
+
+{% block title %}Lekcje - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Lista lekcji</h1>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Kurs</th>
+                    <th>Nauczyciel</th>
+                    <th>Temat</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.date|date:"d.m.Y H:i" }}</td>
+                    <td>{{ lesson.course.name }}</td>
+                    <td>{{ lesson.teacher.user.get_full_name }}</td>
+                    <td>{{ lesson.topic }}</td>
+                    <td>
+                        <a href="{% url 'courses:lesson-detail' lesson.pk %}" class="btn btn-sm btn-info">
+                            Szczegóły
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Brak zaplanowanych lekcji.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
