@@ -40,10 +40,26 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('student', 'course', 'enrollment_date', 'is_paid')
-    list_filter = ('is_paid', 'enrollment_date')
+    list_display = ('get_student', 'get_course', 'get_date', 'get_paid_status')
+    list_filter = ('is_paid',)
     search_fields = ('student__user__first_name', 'student__user__last_name', 'course__name')
 
+    def get_student(self, obj):
+        return obj.student
+    get_student.short_description = 'Student'
+
+    def get_course(self, obj):
+        return obj.course
+    get_course.short_description = 'Course'
+
+    def get_date(self, obj):
+        return obj.enrollment_date
+    get_date.short_description = 'Date'
+
+    def get_paid_status(self, obj):
+        return obj.is_paid
+    get_paid_status.short_description = 'Paid'
+    
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     list_display = ('course', 'teacher', 'date', 'topic')

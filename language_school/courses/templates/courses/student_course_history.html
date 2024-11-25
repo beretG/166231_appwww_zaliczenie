@@ -1,0 +1,39 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="container">
+   <h1 class="mb-4">Historia kursów</h1>
+   <div class="table-responsive">
+       <table class="table table-striped">
+           <thead>
+               <tr>
+                   <th>Kurs</th>
+                   <th>Data rozpoczęcia</th>
+                   <th>Data zakończenia</th>
+                   <th>Frekwencja</th>
+                   <th>Status płatności</th>
+               </tr>
+           </thead>
+           <tbody>
+               {% for enrollment in enrollments %}
+               <tr>
+                   <td>{{ enrollment.course.name }}</td>
+                   <td>{{ enrollment.course.start_date|date:"d.m.Y" }}</td>
+                   <td>{{ enrollment.course.end_date|date:"d.m.Y" }}</td>
+                   <td>{{ enrollment.get_attendance_rate }}%</td>
+                   <td>
+                       {% if enrollment.is_paid %}
+                           <span class="badge bg-success">Opłacono</span>
+                       {% else %}
+                           <span class="badge bg-danger">Nieopłacono</span>
+                       {% endif %}
+                   </td>
+               </tr>
+               {% empty %}
+               <tr><td colspan="5">Brak historii kursów.</td></tr>
+               {% endfor %}
+           </tbody>
+       </table>
+   </div>
+</div>
+{% endblock %}

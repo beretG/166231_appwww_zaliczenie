@@ -1,8 +1,14 @@
-from django.urls import path
+from django.db import router
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 from .views import RegisterView
 from . import views
+from . import api_views 
 
 app_name = 'courses'
+
+router = DefaultRouter()
+router.register(r'courses', api_views.CourseViewSet)
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -32,4 +38,15 @@ urlpatterns = [
 
     # URLs dla rejestracji
     path('register/', RegisterView.as_view(), name='register'),
+
+    # URLs dla API 
+    path('api/', include(router.urls)),
+    path('api/register/', views.register_user, name='register-api'),
+    path('api/student/history/', api_views.student_course_history, name='api-student-history'),
+    path('api/teacher/schedule/', api_views.teacher_schedule, name='api-teacher-schedule'),
+    path('api/lesson/<int:lesson_id>/attendance/', api_views.lesson_attendance, name='lesson-attendance'),
+    path('api/student/<int:student_id>/attendance/', api_views.student_attendance, name='student-attendance'),
+
+    path('teacher/schedule/', views.teacher_schedule_view, name='teacher-schedule-view'),
+    path('student/history/', views.student_course_history_view, name='student-history'),
 ]

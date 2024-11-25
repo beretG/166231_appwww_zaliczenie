@@ -1,0 +1,46 @@
+<!-- courses/templates/courses/teacher_schedule.html -->
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Harmonogram zajęć na najbliższy tydzień</h1>
+    <div class="row">
+        {% regroup lessons by date|date:"Y-m-d" as lessons_by_day %}
+        {% for day in lessons_by_day %}
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ day.grouper|date:"l, d.m.Y" }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Godzina</th>
+                                    <th>Kurs</th>
+                                    <th>Temat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lesson in day.list %}
+                                <tr>
+                                    <td>{{ lesson.date|date:"H:i" }}</td>
+                                    <td>{{ lesson.course.name }}</td>
+                                    <td>{{ lesson.topic }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p>Brak zaplanowanych zajęć na najbliższy tydzień.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

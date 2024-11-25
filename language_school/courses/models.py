@@ -1,3 +1,4 @@
+# courses/models.py
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -43,7 +44,6 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=15)
     date_of_birth = models.DateField(null=True, blank=True)
-    courses = models.ManyToManyField(Course, through='Enrollment')
     
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -56,6 +56,20 @@ class Enrollment(models.Model):
     
     class Meta:
         unique_together = ['student', 'course']
+        db_table = 'courses_enrollment'
+
+    def __str__(self):
+        return f"{self.student} - {self.course}"
+
+    def get_attendance_rate(self):
+        attended = self.student.attendance_set.filter(
+            lesson__course=self.course,
+            is_present=True
+        ).count()
+        total = self.student.attendance_set.filter(
+            lesson__course=self.course
+        ).count()
+        return round(attended / total * 100) if total > 0 else 0
 
 class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)

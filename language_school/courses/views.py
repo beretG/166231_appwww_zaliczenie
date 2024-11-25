@@ -1,15 +1,19 @@
 from datetime import timezone
-from pyexpat.errors import messages
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from .models import Course, Language, Lesson, Teacher, Student
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Teacher, Student, Lesson, Attendance
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from .models import Attendance, Course, Enrollment, Language, Lesson, Student, Teacher
+from django.utils import timezone
 
 # Widok strony głównej
 def home(request):
@@ -144,3 +148,38 @@ class RegisterView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'courses/register.html'
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    if request.method == 'POST':
+        try:
+            data = request.data
+            user = User.objects.create_user(
+                username=data['username'],
+                email=data['email'],
+                password=data['password']
+            )
+            token = Token.objects.create(user=user)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+def teacher_schedule_view(request):
+    today = timezone.now()
+    week_later = today + timezone.timedelta(days=7)
+    lessons = Lesson.objects.filter(
+        teacher=request.user.teacher,
+        date__range=[today, week_later]
+    ).order_by('date')
+    return render(request, 'courses/teacher_schedule.html', {'lessons': lessons})        
+
+def student_course_history_view(request):
+   enrollments = Enrollment.objects.filter(student=request.user.student)
+   return render(request, 'courses/student_course_history.html', {'enrollments': enrollments})
